@@ -1,61 +1,49 @@
+import { Request, Response } from 'express';
 import {
-    fetchUserById,
-    checkUserExists,
-    updateUser,
+	fetchUserById,
+	checkUserExists,
+	updateUser,
 } from '@/service/users';
-import { Request, Response } from "express";
+import { NotFoundError, ConflictError } from '@/utils/errors';
+import { HTTP_STATUS } from '@/utils/httpStatus';
 
 export async function getUserMe(req: Request, res: Response) {
-    try {
-        if (!req.user?.id) {
-            return res.status(400).json({ error: 'User ID is missing' });
-        }
+	if (!req.user?.id) {
+		throw new Error('User ID is missing');
+	}
 
-        const user = await fetchUserById(req.user.id);
+	const user = await fetchUserById(req.user.id);
+	if (!user) {
+		throw new NotFoundError('User not found');
+	}
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.json(user);
-    } catch (error) {
-        console.error('Error in /me endpoint:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+	res.status(HTTP_STATUS.OK).json(user);
 }
 
 export async function updateUserMe(req: Request, res: Response) {
-    try {
-        const { username, email } = req.body;
+	if (!req.user?.id) {
+		throw new Error('User ID is missing');
+	}
 
-        if (!req.user?.id) {
-            return res.status(400).json({ error: 'User ID or role is missing' });
-        }
+	const { username, email } = req.body;
 
-        if (email || username) {
-            const existingUser = await checkUserExists({
-                email,
-                username,
-                excludeUserId: req.user.id
-            });
+	if (email || username) {
+		const existingUser = await checkUserExists({
+			email,
+			username,
+			excludeUserId: req.user.id,
+		});
 
-            if (existingUser) {
-                return res.status(400).json({ error: 'Email or username already taken' });
-            }
-        }
+		if (existingUser) {
+			throw new ConflictError('Email or username already taken');
+		}
+	}
 
-        const updatedUser = await updateUser(
-            req.user.id,
-            {
-                ...(username && { username }),
-                ...(email && { email }),
-            }
-        );
+	const updatedUser = await updateUser(req.user.id, {
+		...(username && { username }),
+		...(email && { email }),
+	});
 
-        res.json(updatedUser);
-    } catch (error) {
-        console.error('Error updating user:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+	res.status(HTTP_STATUS.OK).json(updatedUser);
 }
 

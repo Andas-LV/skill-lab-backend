@@ -1,12 +1,28 @@
 import { z } from 'zod';
 
 export const registerSchema = z.object({
-    email: z.string().min(1),
-    username: z.string().min(3, "Minimum 3 letters").max(20, "Maximum 20 letters"),
-    password: z.string().min(3, "Minimum 3 letters"),
+	email: z
+		.string()
+		.min(1, 'Email is required')
+		.email('Invalid email format'),
+	username: z
+		.string()
+		.min(3, 'Username must be at least 3 characters')
+		.max(20, 'Username must not exceed 20 characters')
+		.regex(
+			/^[a-zA-Z0-9_]+$/,
+			'Username can only contain letters, numbers, and underscores',
+		),
+	password: z
+		.string()
+		.min(6, 'Password must be at least 6 characters')
+		.max(100, 'Password must not exceed 100 characters'),
 });
 
 export const loginSchema = z.object({
-    username: z.string().min(3).max(20),
-    password: z.string()
+	username: z
+		.string()
+		.min(1, 'Username is required')
+		.max(20, 'Username must not exceed 20 characters'),
+	password: z.string().min(1, 'Password is required'),
 });

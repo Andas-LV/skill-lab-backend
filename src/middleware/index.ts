@@ -1,13 +1,19 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import { User } from '@/types/User';
 import { prisma } from '@/lib/prisma';
 import config from '@/config';
+import { UnauthorizedError } from '@/utils/errors';
+
+export interface AuthenticatedUser {
+	id: number;
+	email: string;
+	username: string;
+}
 
 declare global {
 	namespace Express {
 		interface Request {
-			user?: Partial<User>;
+			user?: AuthenticatedUser;
 		}
 	}
 }
@@ -19,33 +25,38 @@ export const authenticateToken = async (
 ) => {
 	try {
 		const authHeader = req.headers['authorization'];
-		const token = authHeader && authHeader.split(' ')[1];
+		const token = authHeader?.startsWith('Bearer ')
+			? authHeader.split(' ')[1]
+			: null;
 
 		if (!token) {
-			return res.status(401).json({ error: 'No token provided' });
+			throw new UnauthorizedError('No token provided');
 		}
 
 		const decoded = jwt.verify(token, config.jwt_key) as JwtPayload;
-		if (!decoded.userId) {
-			return res.status(401).json({ error: 'Invalid token payload' });
+		if (!decoded.userId || typeof decoded.userId !== 'number') {
+			throw new UnauthorizedError('Invalid token payload');
 		}
 
 		const user = await prisma.user.findUnique({
-			where: { id: decoded.userId as number },
+			where: { id: decoded.userId },
+			select: {
+				id: true,
+				email: true,
+				username: true,
+			},
 		});
 
 		if (!user) {
-			return res.status(401).json({ error: 'User not found' });
+			throw new UnauthorizedError('User not found');
 		}
 
-		req.user = {
-			id: user.id,
-			email: user.email,
-			username: user.username,
-		};
-
+		req.user = user;
 		next();
 	} catch (error) {
-		return res.status(401).json({ error: 'Invalid token' });
+		if (error instanceof UnauthorizedError) {
+			return next(error);
+		}
+		next(new UnauthorizedError('Invalid token'));
 	}
 };

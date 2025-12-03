@@ -13,7 +13,9 @@ export async function getCoursesList(): Promise<CourseListItem[]> {
 	});
 }
 
-export async function getCourseById(id: number): Promise<CourseFullInfo | null> {
+export async function getCourseById(
+	id: number,
+): Promise<CourseFullInfo | null> {
 	return prisma.course.findUnique({
 		where: { id },
 		include: {

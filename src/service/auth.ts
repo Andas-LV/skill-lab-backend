@@ -2,7 +2,11 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '@/lib/prisma';
 import config from '@/config';
+import { ConflictError, UnauthorizedError } from '@/utils/errors';
 import { Login, Register } from '@/types/User';
+
+const BCRYPT_ROUNDS = 10;
+const JWT_EXPIRES_IN = '10d';
 
 export async function registerUser(validatedData: Register) {
 	const existingUser = await prisma.user.findFirst({
@@ -15,10 +19,13 @@ export async function registerUser(validatedData: Register) {
 	});
 
 	if (existingUser) {
-		throw new Error('User already exists');
+		throw new ConflictError('User already exists');
 	}
 
-	const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+	const hashedPassword = await bcrypt.hash(
+		validatedData.password,
+		BCRYPT_ROUNDS,
+	);
 
 	const user = await prisma.user.create({
 		data: {
@@ -26,10 +33,17 @@ export async function registerUser(validatedData: Register) {
 			username: validatedData.username,
 			password: hashedPassword,
 		},
+		select: {
+			id: true,
+			email: true,
+			username: true,
+			createdAt: true,
+			updatedAt: true,
+		},
 	});
 
 	const token = jwt.sign({ userId: user.id }, config.jwt_key, {
-		expiresIn: '10d',
+		expiresIn: JWT_EXPIRES_IN,
 	});
 
 	return { token, user };
@@ -41,20 +55,30 @@ export async function loginUser(validatedData: Login) {
 	});
 
 	if (!user) {
-		throw new Error('Invalid credentials');
+		throw new UnauthorizedError('Invalid credentials');
 	}
 
 	const validPassword = await bcrypt.compare(
 		validatedData.password,
 		user.password,
 	);
+
 	if (!validPassword) {
-		throw new Error('Invalid credentials');
+		throw new UnauthorizedError('Invalid credentials');
 	}
 
 	const token = jwt.sign({ userId: user.id }, config.jwt_key, {
-		expiresIn: '10d',
+		expiresIn: JWT_EXPIRES_IN,
 	});
 
-	return { token, user };
+	return {
+		token,
+		user: {
+			id: user.id,
+			email: user.email,
+			username: user.username,
+			createdAt: user.createdAt,
+			updatedAt: user.updatedAt,
+		},
+	};
 }
