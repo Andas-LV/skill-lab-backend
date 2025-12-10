@@ -7,17 +7,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Roles {
+  ADMIN
+  USER
+  TEACHER
+}
+
+enum Categories {
+  ALL
+  FRONTEND
+  MOBILE
+  BACKEND
+  DESIGN
+}
+
 model User {
   id       Int    @id @default(autoincrement())
   email    String @unique
   username String @unique
   password String
+  role      Roles   @default(USER)
 
   processedCourses Int[]
   favoriteCourses  Int[]
 
   basketItems    BasketItem[]
   favoriteItems  FavoriteCourse[]
+  createdCourses Course[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -32,9 +48,12 @@ model Course {
   description  String?
   result       String[] @default([])
   link         String?
-  modulesCount Int      @default(0)
+  price        Int      @default(0)
+  category     Categories @default(ALL)
+  creatorId   Int       @default(1)
+  creator      User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
-  modules        Module[]
+  modules        CourseModule[]
   basketItems    BasketItem[]
   favoriteItems  FavoriteCourse[]
 
@@ -48,13 +67,26 @@ model Module {
   id       Int      @id @default(autoincrement())
   title    String
   children String[] @default([])
-  courseId Int
-  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  courses CourseModule[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
   @@map("Module")
+}
+
+model CourseModule {
+  id       Int   @id @default(autoincrement())
+  courseId Int
+  moduleId Int
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([courseId, moduleId])
+  @@map("CourseModule")
 }
 
 model BasketItem {

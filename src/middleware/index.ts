@@ -8,6 +8,7 @@ export interface AuthenticatedUser {
 	id: number;
 	email: string;
 	username: string;
+	role: 'ADMIN' | 'USER' | 'TEACHER';
 }
 
 declare global {
@@ -44,6 +45,7 @@ export const authenticateToken = async (
 				id: true,
 				email: true,
 				username: true,
+				role: true,
 			},
 		});
 
@@ -58,5 +60,45 @@ export const authenticateToken = async (
 			return next(error);
 		}
 		next(new UnauthorizedError('Invalid token'));
+	}
+};
+
+export const optionalAuthenticateToken = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => {
+	try {
+		const authHeader = req.headers['authorization'];
+		const token = authHeader?.startsWith('Bearer ')
+			? authHeader.split(' ')[1]
+			: null;
+
+		if (!token) {
+			return next();
+		}
+
+		const decoded = jwt.verify(token, config.jwt_key) as JwtPayload;
+		if (!decoded.userId || typeof decoded.userId !== 'number') {
+			return next();
+		}
+
+		const user = await prisma.user.findUnique({
+			where: { id: decoded.userId },
+			select: {
+				id: true,
+				email: true,
+				username: true,
+				role: true,
+			},
+		});
+
+		if (user) {
+			req.user = user;
+		}
+
+		next();
+	} catch (error) {
+		next();
 	}
 };

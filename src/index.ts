@@ -8,6 +8,7 @@ import { swaggerSpec } from '@/config/swagger';
 import { userRouter } from '@/routes/users';
 import { authRouter } from '@/routes/authRoutes';
 import { courseRouter } from '@/routes/course';
+import { moduleRouter } from '@/routes/module';
 import { basketRouter } from '@/routes/basket';
 import { favoritesRouter } from '@/routes/favorites';
 import { errorHandler } from '@/middleware/errorHandler';
@@ -37,6 +38,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/courses', courseRouter);
+app.use('/modules', moduleRouter);
 app.use('/basket', basketRouter);
 app.use('/favorites', favoritesRouter);
 

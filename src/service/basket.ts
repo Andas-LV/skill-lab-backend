@@ -11,14 +11,23 @@ export async function getBasketItems(userId: number): Promise<CourseListItem[]> 
 					id: true,
 					title: true,
 					image: true,
-					modulesCount: true,
+					modules: {
+						select: {
+							id: true,
+						},
+					},
 				},
 			},
 		},
 		orderBy: { createdAt: 'desc' },
 	});
 
-	return basketItems.map((item) => item.course);
+	return basketItems.map((item) => ({
+		id: item.course.id,
+		title: item.course.title,
+		image: item.course.image,
+		modulesCount: item.course.modules.length,
+	}));
 }
 
 export async function addToBasket(userId: number, courseId: number) {
@@ -56,13 +65,22 @@ export async function addToBasket(userId: number, courseId: number) {
 					id: true,
 					title: true,
 					image: true,
-					modulesCount: true,
+					modules: {
+						select: {
+							id: true,
+						},
+					},
 				},
 			},
 		},
 	});
 
-	return basketItem.course;
+	return {
+		id: basketItem.course.id,
+		title: basketItem.course.title,
+		image: basketItem.course.image,
+		modulesCount: basketItem.course.modules.length,
+	};
 }
 
 export async function removeFromBasket(userId: number, courseId: number) {

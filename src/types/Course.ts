@@ -12,6 +12,11 @@ export type CourseFullInfo = CourseListItem & {
 	createdAt: Date;
 	updatedAt: Date;
 	modules: Module[];
+	creator: {
+		id: number;
+		username: string;
+		email: string;
+	};
 };
 
 export type Module = {

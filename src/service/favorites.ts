@@ -13,14 +13,23 @@ export async function getFavoriteCourses(
 					id: true,
 					title: true,
 					image: true,
-					modulesCount: true,
+					modules: {
+						select: {
+							id: true,
+						},
+					},
 				},
 			},
 		},
 		orderBy: { createdAt: 'desc' },
 	});
 
-	return favoriteItems.map((item) => item.course);
+	return favoriteItems.map((item) => ({
+		id: item.course.id,
+		title: item.course.title,
+		image: item.course.image,
+		modulesCount: item.course.modules.length,
+	}));
 }
 
 export async function addToFavorites(userId: number, courseId: number) {
@@ -58,13 +67,22 @@ export async function addToFavorites(userId: number, courseId: number) {
 					id: true,
 					title: true,
 					image: true,
-					modulesCount: true,
+					modules: {
+						select: {
+							id: true,
+						},
+					},
 				},
 			},
 		},
 	});
 
-	return favoriteItem.course;
+	return {
+		id: favoriteItem.course.id,
+		title: favoriteItem.course.title,
+		image: favoriteItem.course.image,
+		modulesCount: favoriteItem.course.modules.length,
+	};
 }
 
 export async function removeFromFavorites(userId: number, courseId: number) {
