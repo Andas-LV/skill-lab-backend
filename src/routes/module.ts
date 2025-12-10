@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+	modulesListController,
 	createModuleController,
 	updateModuleController,
 	deleteModuleController,
@@ -7,7 +8,7 @@ import {
 import { asyncHandler } from '@/middleware/asyncHandler';
 import { validateRequest } from '@/middleware/validateRequest';
 import { validateParams } from '@/middleware/validateParams';
-import { authenticateToken } from '@/middleware';
+import { authenticateToken, optionalAuthenticateToken } from '@/middleware';
 import {
 	createModuleSchema,
 	updateModuleSchema,
@@ -15,6 +16,43 @@ import {
 } from '@/schemas/module';
 
 const router = Router();
+
+/**
+ * @swagger
+ * /modules/list:
+ *   get:
+ *     summary: Получить список всех модулей
+ *     description: Возвращает список всех модулей, отсортированных по дате создания (новые первыми)
+ *     tags: [Modules]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Список модулей
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   title:
+ *                     type: string
+ *                     example: "Введение в программирование"
+ *                   children:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example: ["Урок 1", "Урок 2", "Урок 3"]
+ */
+router.get(
+	'/list',
+	asyncHandler(optionalAuthenticateToken),
+	asyncHandler(modulesListController),
+);
 
 /**
  * @swagger

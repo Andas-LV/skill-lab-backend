@@ -1,10 +1,16 @@
 import { Request, Response } from 'express';
 import {
+	getModulesList,
 	createModule,
 	updateModule,
 	deleteModule,
 } from '@/service/module';
 import { HTTP_STATUS } from '@/utils/httpStatus';
+
+export async function modulesListController(req: Request, res: Response) {
+	const modules = await getModulesList();
+	res.status(HTTP_STATUS.OK).json(modules);
+}
 
 export async function createModuleController(req: Request, res: Response) {
 	const module = await createModule(req.body);

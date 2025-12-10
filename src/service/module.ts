@@ -4,6 +4,19 @@ import { z } from 'zod';
 import { createModuleSchema, updateModuleSchema } from '@/schemas/module';
 import { NotFoundError, ConflictError } from '@/utils/errors';
 
+export async function getModulesList(): Promise<Module[]> {
+	const modules = await prisma.module.findMany({
+		select: {
+			id: true,
+			title: true,
+			children: true,
+		},
+		orderBy: { createdAt: 'desc' },
+	});
+
+	return modules;
+}
+
 export async function createModule(
 	data: z.infer<typeof createModuleSchema>,
 ): Promise<Module> {
