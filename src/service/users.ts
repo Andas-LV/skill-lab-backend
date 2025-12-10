@@ -8,10 +8,25 @@ export async function fetchUserById(userId: number) {
 			id: true,
 			email: true,
 			username: true,
+			role: true,
 			updatedAt: true,
 			basketItems: true,
 			favoriteItems: true,
 		},
+	});
+}
+
+export async function getAllUsers() {
+	return prisma.user.findMany({
+		select: {
+			id: true,
+			email: true,
+			username: true,
+			role: true,
+			createdAt: true,
+			updatedAt: true,
+		},
+		orderBy: { createdAt: 'desc' },
 	});
 }
 

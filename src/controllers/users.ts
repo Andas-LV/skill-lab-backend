@@ -3,13 +3,15 @@ import {
 	fetchUserById,
 	checkUserExists,
 	updateUser,
+	getAllUsers,
 } from '@/service/users';
-import { NotFoundError, ConflictError } from '@/utils/errors';
+import { NotFoundError, ConflictError, UnauthorizedError } from '@/utils/errors';
 import { HTTP_STATUS } from '@/utils/httpStatus';
+import { Role } from '@/types/Role';
 
 export async function getUserMe(req: Request, res: Response) {
 	if (!req.user?.id) {
-		throw new Error('User ID is missing');
+		throw new UnauthorizedError('User ID is missing');
 	}
 
 	const user = await fetchUserById(req.user.id);
@@ -22,7 +24,7 @@ export async function getUserMe(req: Request, res: Response) {
 
 export async function updateUserMe(req: Request, res: Response) {
 	if (!req.user?.id) {
-		throw new Error('User ID is missing');
+		throw new UnauthorizedError('User ID is missing');
 	}
 
 	const { username, email } = req.body;
@@ -45,5 +47,14 @@ export async function updateUserMe(req: Request, res: Response) {
 	});
 
 	res.status(HTTP_STATUS.OK).json(updatedUser);
+}
+
+export async function getAllUsersController(req: Request, res: Response) {
+	if (!req.user?.role || req.user.role !== Role.ADMIN) {
+		throw new UnauthorizedError('Only admins can view all users');
+	}
+
+	const users = await getAllUsers();
+	res.status(HTTP_STATUS.OK).json(users);
 }
 

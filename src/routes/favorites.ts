@@ -36,6 +36,10 @@ router.use(asyncHandler(authenticateToken));
  *                 $ref: '#/components/schemas/CourseListItem'
  *       401:
  *         description: Не авторизован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/', asyncHandler(getFavoritesController));
 
@@ -68,10 +72,22 @@ router.get('/', asyncHandler(getFavoritesController));
  *               $ref: '#/components/schemas/CourseListItem'
  *       400:
  *         description: Ошибка валидации или курс уже в избранном
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       401:
  *         description: Не авторизован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Курс не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post(
 	'/add',
@@ -106,8 +122,16 @@ router.post(
  *                   type: boolean
  *       401:
  *         description: Не авторизован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Курс не найден в избранном
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.delete(
 	'/:courseId',

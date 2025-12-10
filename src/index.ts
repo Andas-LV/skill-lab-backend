@@ -35,6 +35,11 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+app.get('/swagger.json', (req: Request, res: Response) => {
+	res.setHeader('Content-Type', 'application/json');
+	res.send(swaggerSpec);
+});
+
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/courses', courseRouter);

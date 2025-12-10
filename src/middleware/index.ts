@@ -3,12 +3,13 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '@/lib/prisma';
 import config from '@/config';
 import { UnauthorizedError } from '@/utils/errors';
+import { TRole } from '@/types/Role';
 
 export interface AuthenticatedUser {
 	id: number;
 	email: string;
 	username: string;
-	role: 'ADMIN' | 'USER' | 'TEACHER';
+	role: TRole;
 }
 
 declare global {
@@ -53,7 +54,12 @@ export const authenticateToken = async (
 			throw new UnauthorizedError('User not found');
 		}
 
-		req.user = user;
+		req.user = {
+			id: user.id,
+			email: user.email,
+			username: user.username,
+			role: user.role as TRole,
+		};
 		next();
 	} catch (error) {
 		if (error instanceof UnauthorizedError) {
@@ -94,7 +100,12 @@ export const optionalAuthenticateToken = async (
 		});
 
 		if (user) {
-			req.user = user;
+			req.user = {
+				id: user.id,
+				email: user.email,
+				username: user.username,
+				role: user.role as TRole,
+			};
 		}
 
 		next();

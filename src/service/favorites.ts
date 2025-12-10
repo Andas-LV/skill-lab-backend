@@ -13,6 +13,8 @@ export async function getFavoriteCourses(
 					id: true,
 					title: true,
 					image: true,
+					price: true,
+					category: true,
 					modules: {
 						select: {
 							id: true,
@@ -28,6 +30,8 @@ export async function getFavoriteCourses(
 		id: item.course.id,
 		title: item.course.title,
 		image: item.course.image,
+		price: item.course.price,
+		category: item.course.category,
 		modulesCount: item.course.modules.length,
 	}));
 }
@@ -67,6 +71,8 @@ export async function addToFavorites(userId: number, courseId: number) {
 					id: true,
 					title: true,
 					image: true,
+					price: true,
+					category: true,
 					modules: {
 						select: {
 							id: true,
@@ -81,6 +87,8 @@ export async function addToFavorites(userId: number, courseId: number) {
 		id: favoriteItem.course.id,
 		title: favoriteItem.course.title,
 		image: favoriteItem.course.image,
+		price: favoriteItem.course.price,
+		category: favoriteItem.course.category,
 		modulesCount: favoriteItem.course.modules.length,
 	};
 }

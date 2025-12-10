@@ -6,7 +6,7 @@ export const validateQuery =
 	(schema: ZodSchema) => (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const parsed = schema.parse(req.query);
-			(req as any).validatedQuery = parsed;
+			Object.assign(req.query, parsed);
 			next();
 		} catch (error) {
 			if (error instanceof ZodError) {

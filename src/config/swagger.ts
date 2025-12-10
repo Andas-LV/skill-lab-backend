@@ -62,6 +62,8 @@ const options: swaggerJsdoc.Options = {
 						id: { type: 'integer' },
 						title: { type: 'string' },
 						image: { type: 'string', nullable: true },
+						price: { type: 'integer' },
+						category: { type: 'string', enum: ['ALL', 'FRONTEND', 'MOBILE', 'BACKEND', 'DESIGN'] },
 						modulesCount: { type: 'integer' },
 					},
 				},
@@ -93,6 +95,35 @@ const options: swaggerJsdoc.Options = {
 										},
 									},
 								},
+								questions: {
+									type: 'array',
+									items: {
+										type: 'object',
+										properties: {
+											id: { type: 'integer' },
+											title: { type: 'string' },
+											options: {
+												type: 'array',
+												items: {
+													type: 'object',
+													properties: {
+														answerName: { type: 'string' },
+														right: { type: 'boolean' },
+													},
+													required: ['answerName', 'right'],
+												},
+											},
+										},
+									},
+								},
+								creator: {
+									type: 'object',
+									properties: {
+										id: { type: 'integer' },
+										username: { type: 'string' },
+										email: { type: 'string' },
+									},
+								},
 							},
 						},
 					],
@@ -103,6 +134,7 @@ const options: swaggerJsdoc.Options = {
 			{ name: 'Auth', description: 'Аутентификация и регистрация' },
 			{ name: 'Users', description: 'Управление пользователями' },
 			{ name: 'Courses', description: 'Управление курсами' },
+			{ name: 'Modules', description: 'Управление модулями' },
 			{ name: 'Basket', description: 'Корзина' },
 			{ name: 'Favorites', description: 'Избранные курсы' },
 		],

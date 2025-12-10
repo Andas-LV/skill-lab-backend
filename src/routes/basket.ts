@@ -69,10 +69,22 @@ router.get('/', asyncHandler(getBasketController));
  *               $ref: '#/components/schemas/CourseListItem'
  *       400:
  *         description: Ошибка валидации или курс уже в корзине
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       401:
  *         description: Не авторизован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Курс не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post(
 	'/add',
@@ -107,8 +119,16 @@ router.post(
  *                   type: boolean
  *       401:
  *         description: Не авторизован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Курс не найден в корзине
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.delete(
 	'/:courseId',
@@ -136,6 +156,10 @@ router.delete(
  *                   type: boolean
  *       401:
  *         description: Не авторизован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.delete('/clear', asyncHandler(clearBasketController));
 

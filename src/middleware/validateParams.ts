@@ -6,7 +6,8 @@ export const validateParams =
 	(schema: ZodSchema) =>
 	(req: Request, res: Response, next: NextFunction) => {
 		try {
-			req.params = schema.parse(req.params);
+			const parsed = schema.parse(req.params);
+			Object.assign(req.params, parsed);
 			next();
 		} catch (error) {
 			if (error instanceof ZodError) {

@@ -98,6 +98,12 @@ router.post(
  *                 user:
  *                   $ref: '#/components/schemas/User'
  *       400:
+ *         description: Ошибка валидации
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
  *         description: Неверные учетные данные
  *         content:
  *           application/json:

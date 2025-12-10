@@ -11,6 +11,8 @@ export async function getBasketItems(userId: number): Promise<CourseListItem[]> 
 					id: true,
 					title: true,
 					image: true,
+					price: true,
+					category: true,
 					modules: {
 						select: {
 							id: true,
@@ -26,6 +28,8 @@ export async function getBasketItems(userId: number): Promise<CourseListItem[]> 
 		id: item.course.id,
 		title: item.course.title,
 		image: item.course.image,
+		price: item.course.price,
+		category: item.course.category,
 		modulesCount: item.course.modules.length,
 	}));
 }
@@ -65,6 +69,8 @@ export async function addToBasket(userId: number, courseId: number) {
 					id: true,
 					title: true,
 					image: true,
+					price: true,
+					category: true,
 					modules: {
 						select: {
 							id: true,
@@ -79,6 +85,8 @@ export async function addToBasket(userId: number, courseId: number) {
 		id: basketItem.course.id,
 		title: basketItem.course.title,
 		image: basketItem.course.image,
+		price: basketItem.course.price,
+		category: basketItem.course.category,
 		modulesCount: basketItem.course.modules.length,
 	};
 }
