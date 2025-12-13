@@ -19,3 +19,9 @@ export const updateUserSchema = z
 	.refine((data) => data.email || data.username, {
 		message: 'At least one field (email or username) must be provided',
 	});
+
+export const changeUserRoleSchema = z.object({
+	role: z.enum(['ADMIN', 'USER', 'TEACHER'], {
+		errorMap: () => ({ message: 'Role must be one of: ADMIN, USER, TEACHER' }),
+	}),
+});
