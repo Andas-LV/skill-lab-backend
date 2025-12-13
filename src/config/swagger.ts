@@ -52,6 +52,11 @@ const options: swaggerJsdoc.Options = {
 						id: { type: 'integer' },
 						email: { type: 'string' },
 						username: { type: 'string' },
+						role: {
+							type: 'string',
+							enum: ['ADMIN', 'USER', 'TEACHER'],
+							description: 'Роль пользователя в системе'
+						},
 						createdAt: { type: 'string', format: 'date-time' },
 						updatedAt: { type: 'string', format: 'date-time' },
 					},

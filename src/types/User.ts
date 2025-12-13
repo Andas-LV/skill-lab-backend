@@ -2,7 +2,9 @@ export type User = {
     id: number,
     email: string,
     username: string,
-
+    role: 'ADMIN' | 'USER' | 'TEACHER',
+    createdAt: Date,
+    updatedAt: Date,
 }
 
 export type Register = {
