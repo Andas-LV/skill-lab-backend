@@ -94,6 +94,33 @@ router.post(
 
 /**
  * @swagger
+ * /basket/clear:
+ *   delete:
+ *     summary: Очистить корзину
+ *     tags: [Basket]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Корзина очищена
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *       401:
+ *         description: Не авторизован
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.delete('/clear', asyncHandler(clearBasketController));
+
+/**
+ * @swagger
  * /basket/{courseId}:
  *   delete:
  *     summary: Удалить курс из корзины
@@ -135,33 +162,6 @@ router.delete(
 	validateParams(removeFromBasketParamsSchema),
 	asyncHandler(removeFromBasketController),
 );
-
-/**
- * @swagger
- * /basket/clear:
- *   delete:
- *     summary: Очистить корзину
- *     tags: [Basket]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Корзина очищена
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *       401:
- *         description: Не авторизован
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-router.delete('/clear', asyncHandler(clearBasketController));
 
 export const basketRouter = router;
 
